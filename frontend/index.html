@@ -12,13 +12,12 @@
             theme: {
                 extend: {
                     colors: {
-                        "background": "#0A0A0A",
+                        "background": "#131313",
                         "on-background": "#00FF41",
                         "primary": "#00FF41",
                         "on-primary": "#000000",
-                        "secondary": "#00FF41",
                         "surface": "#131313",
-                        "surface-variant": "#1B1B1B",
+                        "surface-variant": "#1f1f1f",
                         "outline": "#00FF41",
                         "error": "#FF0000"
                     },
@@ -33,21 +32,23 @@
         }
     </script>
     <link href="css/style.css" rel="stylesheet"/>
-    <title> Meeting Assistant</title>
-    <!--
-      Production API URLs are injected here by your deployment pipeline.
-      On Vercel: add these as Environment Variables and use a build script,
-      OR manually update before deploying.
-      For local dev these meta tags are absent and config.js falls back to localhost.
-    -->
-    <meta name="api-base-url" content="https://meeting-assistant-production-86cb.up.railway.app"> 
+    <title>Meeting Assistant</title>
+    <meta name="api-base-url" content="https://meeting-assistant-production-86cb.up.railway.app">
     <meta name="ws-base-url"  content="wss://meeting-assistant-production-86cb.up.railway.app">
+    <style>
+        body {
+            background-color: #131313;
+            background-image: linear-gradient(rgba(0,255,65,0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0,255,65,0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+    </style>
 </head>
-<body class="bg-background text-on-background font-body selection:bg-primary selection:text-black crt-flicker">
+<body class="font-body text-[#00FF41] selection:bg-[#00FF41] selection:text-black">
 
-<!-- Login Page (Hidden by default) -->
-<div id="loginPage" class="fixed inset-0 bg-background flex items-center justify-center z-50 hidden">
-    <div class="w-full max-w-md border-2 border-[#00FF41] p-8 bg-[#131313]">
+<!-- Login Page -->
+<div id="loginPage" class="fixed inset-0 bg-[#131313] flex items-center justify-center z-50 hidden">
+    <div class="w-full max-w-md border-2 border-[#00FF41] p-8 bg-[#0e0e0e]">
         <h1 class="text-3xl font-bold text-[#00FF41] mb-8 text-center terminal-text-glow">EXEC_ASST_v1</h1>
         <form id="authForm" class="space-y-6">
             <div>
@@ -70,30 +71,36 @@
 
 <!-- Main App -->
 <div id="mainApp" class="hidden">
-    <!-- TopAppBar -->
-    <header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#131313] border-b-2 border-[#1B1B1B] shadow-[0_0_15px_rgba(0,255,65,0.15)]">
-        <div class="flex items-center gap-3 cursor-pointer active:opacity-70">
-            <span class="material-symbols-outlined text-[#00FF41]">terminal</span>
-            <span class="font-['Space_Grotesk'] uppercase tracking-widest font-bold text-xl text-[#00FF41] animate-pulse terminal-text-glow">TERMINAL_SESSION_01</span>
-        </div>
+
+    <!-- TopNavBar -->
+    <nav class="bg-black text-[#00FF41] font-mono uppercase tracking-tighter text-sm fixed top-0 w-full border-b-2 border-[#00FF41]/30 shadow-[0_0_15px_rgba(0,255,65,0.2)] flex justify-between items-center px-6 py-3 z-50">
         <div class="flex items-center gap-4">
-            <button id="settingsButton" class="material-symbols-outlined text-[#00FF41] p-2 hover:bg-[#00FF41]/10 transition-colors cursor-pointer">settings</button>
-            <div class="w-10 h-10 border-2 border-[#00FF41] flex items-center justify-center overflow-hidden">
-                <img id="userProfileImage" alt="User Profile" class="w-full h-full object-cover grayscale brightness-75 contrast-125"/>
+            <span class="text-xl font-black text-[#00FF41] animate-pulse terminal-text-glow">SYSTEM_COMMAND_V1.0</span>
+            <div class="hidden md:flex gap-6 ml-8">
+                <a class="text-black bg-[#00FF41] px-2 py-1 transition-colors duration-75" href="#">TRANSCRIPTS</a>
+                <a class="text-[#00FF41] hover:bg-[#00FF41]/20 px-2 py-1 transition-colors duration-75" href="#">ACTION_ITEMS</a>
+                <a class="text-[#00FF41] hover:bg-[#00FF41]/20 px-2 py-1 transition-colors duration-75" href="#">ARCHIVE</a>
             </div>
         </div>
-    </header>
+        <div class="flex items-center gap-3">
+            <button id="settingsButton" class="material-symbols-outlined text-[#00FF41] hover:bg-[#00FF41] hover:text-black p-1 cursor-pointer transition-colors">settings</button>
+            <div class="w-8 h-8 border border-[#00FF41] flex items-center justify-center overflow-hidden">
+                <img id="userProfileImage" alt="User" class="w-full h-full object-cover grayscale"/>
+            </div>
+            <button id="logoutBtnNav" class="material-symbols-outlined text-[#00FF41] hover:bg-[#00FF41] hover:text-black p-1 cursor-pointer transition-colors">power_settings_new</button>
+        </div>
+    </nav>
 
     <!-- Settings Panel -->
-    <div id="settingsPanel" class="fixed right-0 top-16 w-80 bg-[#131313] border-l-2 border-[#00FF41] p-6 z-40 hidden max-h-screen overflow-y-auto">
-        <h2 class="text-[#00FF41] font-bold mb-6 uppercase text-lg">SETTINGS_PANEL</h2>
-        <div class="space-y-4 border-b border-[#00FF41] pb-6 mb-6">
+    <div id="settingsPanel" class="fixed right-0 top-12 w-72 bg-[#0e0e0e] border-l-2 border-[#00FF41] p-6 z-40 hidden max-h-screen overflow-y-auto">
+        <h2 class="text-[#00FF41] font-bold mb-6 uppercase text-sm tracking-widest">SETTINGS_PANEL</h2>
+        <div class="space-y-4 border-b border-[#00FF41]/30 pb-6 mb-6">
             <div>
-                <label class="text-[#00FF41]/70 text-xs uppercase block mb-1">User Email</label>
+                <label class="text-[#00FF41]/60 text-xs uppercase block mb-1">User Email</label>
                 <p id="userEmail" class="text-[#00FF41] font-mono text-sm break-words">loading...</p>
             </div>
             <div>
-                <label class="text-[#00FF41]/70 text-xs uppercase block mb-1">Full Name</label>
+                <label class="text-[#00FF41]/60 text-xs uppercase block mb-1">Full Name</label>
                 <input id="fullNameUpdateInput" type="text" class="w-full bg-black border border-[#00FF41] text-[#00FF41] px-3 py-2 text-sm"/>
             </div>
             <button id="updateProfileBtn" class="w-full bg-[#00FF41] text-black px-4 py-2 font-bold uppercase hover:bg-black hover:text-[#00FF41] hover:border-2 hover:border-[#00FF41] transition-all text-sm">SAVE_PROFILE</button>
@@ -101,168 +108,224 @@
         <button id="logoutBtn" class="w-full bg-black border-2 border-[#00FF41] text-[#00FF41] px-4 py-2 font-bold uppercase transition-all text-sm">LOGOUT</button>
     </div>
 
-    <main class="relative pt-16 pb-24 md:pb-0">
-        <!-- Hero Section -->
-        <section class="relative pt-16 pb-24 px-6 overflow-hidden">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div class="space-y-8">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 border border-[#00FF41] text-[#00FF41] text-xs font-bold tracking-[0.2em] uppercase bg-[#00FF41]/10">
-                        <span class="material-symbols-outlined text-sm">auto_awesome</span>
-                        PRV_DIGITAL_CONCIERGE_V1.0
+    <!-- Main Content -->
+    <main class="pt-12">
+        <div class="max-w-7xl mx-auto p-6 flex flex-col gap-8 min-h-screen">
+
+            <!-- Primary Dashboard Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+                <!-- LEFT: Live Transcription Stream (8-col) -->
+                <section class="md:col-span-8 bg-[#0e0e0e] border border-[#00FF41]/20 p-6 shadow-[inset_0_0_20px_rgba(0,255,65,0.05)] relative overflow-hidden h-[600px] flex flex-col">
+                    <div class="flex justify-between items-center mb-5 border-b border-[#00FF41]/20 pb-4">
+                        <h2 class="text-[#00FF41] font-bold text-sm tracking-widest uppercase">LIVE_TRANSCRIPTION_STREAM</h2>
+                        <div class="flex items-center gap-2">
+                            <span id="liveIndicator" class="w-2 h-2 bg-[#00FF41] rounded-full animate-pulse hidden"></span>
+                            <span id="liveStatusText" class="text-[10px] text-[#00FF41]/50 uppercase">STANDBY</span>
+                        </div>
                     </div>
-                    <h1 class="font-headline font-bold text-5xl md:text-6xl text-primary leading-tight tracking-tight uppercase terminal-text-glow">
-                        Command your <br/><span class="bg-[#00FF41] text-black px-2">MEETINGS.</span>
-                    </h1>
-                    <p class="text-[#00FF41]/80 text-lg max-w-lg leading-relaxed border-l-4 border-[#00FF41] pl-6">
-                        [SYSTEM_LOG]: Focus on the conversation. We handle high-fidelity transcripts and intelligent action items. Process initiated.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                        <button id="listenNowBtn" class="bg-[#00FF41] text-black px-8 py-4 font-headline font-bold text-lg flex items-center justify-center gap-3 border-2 border-transparent hover:bg-black hover:text-[#00FF41] hover:border-[#00FF41] transition-all active:scale-95 terminal-glow">
-                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mic</span>
-                            LISTEN_NOW
+
+                    <!-- Chat-style transcript -->
+                    <div id="transcriptPreview" class="flex-1 overflow-y-auto pr-2 flex flex-col gap-5">
+                        <div class="flex items-center gap-2 text-[#00FF41] mt-2">
+                            <span class="animate-pulse text-lg leading-none">_</span>
+                            <span class="text-xs uppercase tracking-widest text-[#00FF41]/30">Awaiting voice input...</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom action bar -->
+                    <div class="mt-5 flex gap-3">
+                        <button id="listenNowBtn"
+                            class="flex-1 bg-[#00FF41] text-black font-bold py-4 tracking-[0.15em] uppercase hover:shadow-[0_0_20px_rgba(0,255,65,0.5)] transition-all active:scale-[0.99] flex items-center justify-center gap-3 text-sm">
+                            <span class="material-symbols-outlined text-lg">mic</span>
+                            INITIATE_CAPTURE
                         </button>
-                        <button id="emailTranscriptBtn" class="bg-black text-[#00FF41] px-8 py-4 font-headline font-bold text-lg border-2 border-[#00FF41] hover:bg-[#00FF41]/10 transition-colors active:scale-95" title="Send transcript & action items to email" disabled>
-                            <span class="material-symbols-outlined inline mr-2">mail</span>
-                            SEND_TO_EMAIL
+                        <button id="emailTranscriptBtn"
+                            class="bg-black text-[#00FF41] px-5 py-4 font-bold uppercase border border-[#00FF41] hover:bg-[#00FF41]/10 transition-colors active:scale-95 flex items-center gap-2 text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+                            title="Send transcript & action items to email" disabled>
+                            <span class="material-symbols-outlined text-lg">mail</span>
+                            <span class="hidden sm:inline">SEND_EMAIL</span>
                         </button>
                     </div>
-                </div>
-                <div class="relative">
-                    <div class="scanline"></div>
-                    <!-- Bento Grid Dashboard Mockup -->
-                    <div class="grid grid-cols-6 grid-rows-6 gap-2 h-[500px]">
-                        <div class="col-span-4 row-span-3 bg-black border border-[#00FF41] p-6 terminal-glow overflow-hidden relative">
-                            <div class="flex items-center justify-between mb-4">
-                                <span class="font-headline font-bold text-sm text-[#00FF41] uppercase tracking-widest">&gt; LIVE_TRANSCRIPT</span>
-                                <span id="liveIndicator" class="flex h-3 w-3 bg-[#00FF41] animate-pulse hidden"></span>
-                            </div>
-                            <div id="transcriptPreview" class="space-y-3 font-mono text-[10px] text-[#00FF41]/60 max-h-[300px] overflow-y-auto">
-                                <p><span class="text-[#00FF41]">[14:22:01]</span> USER_01: "Ready to start meeting."</p>
-                                <p><span class="text-[#00FF41]">[14:22:15]</span> AI_PROC: Initializing transcript capture...</p>
-                                <p><span class="text-[#00FF41]">[14:22:20]</span> STATUS: Listening for audio input...</p>
-                            </div>
-                        </div>
-                        <div class="col-span-2 row-span-2 bg-[#00FF41] text-black p-6 flex flex-col justify-between">
-                            <span class="material-symbols-outlined text-3xl">task_alt</span>
-                            <span id="actionItemsCount" class="font-headline font-bold text-2xl tracking-tighter">0_ACTS</span>
-                        </div>
-                        <div class="col-span-2 row-span-4 border border-[#00FF41] relative overflow-hidden bg-black">
-                            <img alt="Meeting Visual" class="absolute inset-0 w-full h-full object-cover grayscale opacity-30 contrast-150" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoIPx6csoA2txh41e3EStxBD1QU3Vj6tjA5OQQvpF36JBN4W20E_4UU8fAo5lrPUQ3HwviwIz9wYT7HYDuQP74EVZ2EhlC-SQNzbqHGuNI13WuX9iqobs0MG2B2ul32enFxhbgT9QSqyT5-RUpZNkJWg8r4oj7fV7HWn8fe2ZJx7YfO1zx_jbSLNECcyL5ryog11vY_du21XJb4wRLZpqpcaCUwC3oxsJLFGIXbU3mTuLbogut5lcBCT7g1ZVD65UPw4K7QzVuP8E"/>
-                            <div class="relative z-10 p-6 bg-gradient-to-t from-black to-transparent h-full flex flex-col justify-end">
-                                <span class="font-label text-[#00FF41] text-[10px] tracking-widest uppercase">UPCOMING_SYS</span>
-                                <h3 class="text-[#00FF41] font-headline font-bold text-sm mt-2">STRATEGY_SYNC.04</h3>
-                            </div>
-                        </div>
-                        <div class="col-span-4 row-span-3 bg-black border border-[#00FF41] p-6 relative">
-                            <div class="flex items-center gap-4 mb-4">
-                                <div class="w-10 h-10 border border-[#00FF41] flex items-center justify-center bg-[#00FF41]/10">
-                                    <span class="material-symbols-outlined text-[#00FF41]">person</span>
+                </section>
+
+                <!-- RIGHT: Heuristic Analysis + System Panel (4-col) -->
+                <section class="md:col-span-4 flex flex-col gap-5">
+
+                    <!-- Heuristic Analysis Panel -->
+                    <div class="bg-[#1a1a1a] p-5 border-l-2 border-[#00FF41]">
+                        <h3 class="text-[#00FF41] text-xs font-black tracking-[0.25em] mb-5 uppercase">HEURISTIC_ANALYSIS</h3>
+                        <div class="space-y-5">
+                            <!-- Keyword Density -->
+                            <div class="flex flex-col gap-1.5">
+                                <span class="text-[10px] text-[#00FF41]/50 uppercase tracking-widest">KEYWORD_DENSITY</span>
+                                <div class="h-1 bg-[#0e0e0e] w-full">
+                                    <div id="hKeywordBar" class="h-full bg-[#00FF41] shadow-[0_0_8px_#00FF41] transition-all duration-700" style="width:0%"></div>
                                 </div>
-                                <div>
-                                    <p class="font-headline font-bold text-xs uppercase text-[#00FF41]">EXEC_SUMMARY_LOG</p>
-                                    <p class="text-[10px] text-[#00FF41]/50 uppercase">GEN_TIME: READY</p>
+                                <span id="hKeywordPct" class="text-[10px] text-[#00FF41]/40">0%</span>
+                            </div>
+
+                            <!-- Sentiment Polarity -->
+                            <div class="flex flex-col gap-1.5">
+                                <span class="text-[10px] text-[#00FF41]/50 uppercase tracking-widest">SENTIMENT_POLARITY</span>
+                                <div class="flex justify-between text-[10px] font-mono mb-1">
+                                    <span class="text-red-400">NEG</span>
+                                    <span class="text-yellow-400">NEUTRAL</span>
+                                    <span class="text-[#00FF41]">POS</span>
+                                </div>
+                                <div class="h-1 bg-[#0e0e0e] w-full relative">
+                                    <div id="hSentimentMarker" class="absolute h-3 w-1 bg-white -top-1 transition-all duration-700" style="left:50%"></div>
+                                </div>
+                                <span id="hSentimentLabel" class="text-[10px] text-[#00FF41]/40 mt-0.5 uppercase">--</span>
+                            </div>
+
+                            <!-- Speaking Pace -->
+                            <div class="flex justify-between items-end">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[10px] text-[#00FF41]/50 uppercase tracking-widest">SPEAKING_PACE</span>
+                                    <span id="hPace" class="text-2xl font-bold text-[#00FF41]">--</span>
+                                    <span id="hPaceLabel" class="text-[10px] text-[#00FF41]/40 uppercase">WPM</span>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <span class="text-[10px] text-[#00FF41]/50 uppercase tracking-widest">MEETING_TYPE</span>
+                                    <span id="hMeetingType" class="text-sm font-bold text-[#00FF41] uppercase">--</span>
                                 </div>
                             </div>
-                            <p id="summaryPreview" class="text-[11px] text-[#00FF41] leading-relaxed italic border-l border-[#00FF41] pl-3">
-                                "Start recording to generate meeting summary and extract action items automatically."
+                        </div>
+
+                        <!-- Risk / Urgency Flags -->
+                        <div class="mt-5 border-t border-[#00FF41]/10 pt-4">
+                            <span class="text-[10px] text-[#00FF41]/50 uppercase tracking-widest block mb-2">FLAGS_DETECTED</span>
+                            <ul id="hRiskFlags" class="space-y-2 text-[11px]">
+                                <li class="text-[#00FF41]/25 text-[10px] uppercase">// No flags detected</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- System Load / Summary Panel -->
+                    <div class="bg-[#0e0e0e] border border-[#00FF41]/10 p-5 flex-1 flex flex-col gap-4">
+                        <div>
+                            <h4 class="text-[#00FF41]/40 text-[10px] tracking-[0.3em] uppercase mb-3">CORE_PROCESSING</h4>
+                            <div id="processingBars" class="grid grid-cols-4 gap-1">
+                                <div class="h-7 bg-[#00FF41]/15"></div>
+                                <div class="h-7 bg-[#00FF41]/35"></div>
+                                <div class="h-7 bg-[#00FF41]/50"></div>
+                                <div class="h-7 bg-[#00FF41]/20 animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex-1">
+                            <div class="text-[10px] text-[#00FF41]/40 uppercase mb-2">EXEC_SUMMARY</div>
+                            <p id="summaryPreview" class="text-[11px] text-[#00FF41]/60 leading-relaxed italic border-l border-[#00FF41]/20 pl-3">
+                                "Start recording to generate meeting summary."
                             </p>
                         </div>
+
+                        <div>
+                            <div class="text-[10px] text-[#00FF41]/40 uppercase mb-1.5">BUFFER_CAPACITY</div>
+                            <div class="flex gap-1">
+                                <div class="w-full h-1 bg-[#00FF41]/20"></div>
+                                <div class="w-full h-1 bg-[#00FF41]/20"></div>
+                                <div class="w-full h-1 bg-[#00FF41]/20"></div>
+                                <div class="w-full h-1 bg-[#00FF41]/10"></div>
+                                <div class="w-full h-1 bg-[#00FF41]/10"></div>
+                            </div>
+                        </div>
                     </div>
+                </section>
+            </div>
+
+            <!-- ACTION LOG TABLE -->
+            <section id="actionLogSection" class="bg-[#1a1a1a] border border-[#00FF41]/20 overflow-hidden">
+                <div class="bg-[#222] px-6 py-3 border-b border-[#00FF41]/30 flex justify-between items-center">
+                    <h2 class="text-[#00FF41] font-bold text-xs tracking-[0.25em] uppercase">ACTION_REQUIRED_LOG</h2>
+                    <span id="actionLogCount" class="text-[10px] text-[#00FF41]/50 uppercase">ENTRIES: 0</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm font-mono border-collapse">
+                        <thead>
+                            <tr class="bg-black text-[#00FF41]/40 text-[11px] uppercase tracking-widest">
+                                <th class="px-6 py-3 border-b border-[#00FF41]/15 font-normal">TASK_DESC</th>
+                                <th class="px-6 py-3 border-b border-[#00FF41]/15 font-normal">ASSIGN</th>
+                                <th class="px-6 py-3 border-b border-[#00FF41]/15 font-normal">DATE</th>
+                                <th class="px-6 py-3 border-b border-[#00FF41]/15 font-normal text-right">PRIORITY</th>
+                            </tr>
+                        </thead>
+                        <tbody id="actionLogBody" class="divide-y divide-[#00FF41]/10">
+                            <tr>
+                                <td colspan="4" class="px-6 py-5 text-[#00FF41]/25 text-xs uppercase">// No items yet. Record a meeting to populate.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Decorative Stats Row -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-5 opacity-35">
+                <div class="h-20 border border-[#00FF41]/20 flex flex-col items-center justify-center gap-1">
+                    <span class="text-[10px] text-[#00FF41]/50 uppercase">ACTION_ITEMS</span>
+                    <span id="actionItemsCount" class="text-[#00FF41] text-xl font-bold">0_ACTS</span>
+                </div>
+                <div class="h-20 border border-[#00FF41]/20 flex flex-col items-center justify-center gap-1">
+                    <span class="text-[10px] text-[#00FF41]/50 uppercase">LATENCY_MS</span>
+                    <span class="text-[#00FF41] text-xl font-bold">14ms</span>
+                </div>
+                <div class="h-20 border border-[#00FF41]/20 flex flex-col items-center justify-center gap-1">
+                    <span class="text-[10px] text-[#00FF41]/50 uppercase">PACKET_LOSS</span>
+                    <span class="text-[#00FF41] text-xl font-bold">0.00</span>
+                </div>
+                <div class="h-20 border border-[#00FF41]/20 flex flex-col items-center justify-center gap-1">
+                    <span class="text-[10px] text-[#00FF41]/50 uppercase">NODES_ACTIVE</span>
+                    <span class="text-[#00FF41] text-xl font-bold">12</span>
                 </div>
             </div>
-        </section>
 
-        <!-- Features Section -->
-        <section class="py-24 bg-[#050505] px-6 border-y border-[#1B1B1B]">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-                    <div class="max-w-2xl">
-                        <h2 class="font-headline font-bold text-4xl text-primary tracking-tight mb-4 uppercase terminal-text-glow">AUTOMATED_POWER.v1</h2>
-                        <p class="text-[#00FF41]/80 text-lg border-l-2 border-[#00FF41] pl-4">We built a system that stays in background_buffer, so you can stay in current_moment.</p>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
-                    <!-- Feature 1 -->
-                    <div class="group p-8 border border-[#00FF41]/30 hover:bg-[#00FF41] transition-all duration-300">
-                        <div class="w-14 h-14 border-2 border-[#00FF41] flex items-center justify-center mb-6 text-[#00FF41] group-hover:bg-black transition-colors">
-                            <span class="material-symbols-outlined text-3xl">bolt</span>
-                        </div>
-                        <h3 class="font-headline font-bold text-xl text-primary mb-3 uppercase group-hover:text-black">REALTIME_LOGS</h3>
-                        <p class="text-[#00FF41]/70 leading-relaxed group-hover:text-black/80">Capture every word with high accuracy. Real-time transcript processing for immediate data retrieval.</p>
-                    </div>
-                    <!-- Feature 2 -->
-                    <div class="group p-8 border border-[#00FF41]/30 hover:bg-[#00FF41] transition-all duration-300">
-                        <div class="w-14 h-14 border-2 border-[#00FF41] flex items-center justify-center mb-6 text-[#00FF41] group-hover:bg-black transition-colors">
-                            <span class="material-symbols-outlined text-3xl">smart_toy</span>
-                        </div>
-                        <h3 class="font-headline font-bold text-xl text-primary mb-3 uppercase group-hover:text-black">AUTO_CMD</h3>
-                        <p class="text-[#00FF41]/70 leading-relaxed group-hover:text-black/80">AI detects commitments and tasks automatically, populating your action item list without delay.</p>
-                    </div>
-                    <!-- Feature 3 -->
-                    <div class="group p-8 border border-[#00FF41]/30 hover:bg-[#00FF41] transition-all duration-300">
-                        <div class="w-14 h-14 border-2 border-[#00FF41] flex items-center justify-center mb-6 text-[#00FF41] group-hover:bg-black transition-colors">
-                            <span class="material-symbols-outlined text-3xl">security</span>
-                        </div>
-                        <h3 class="font-headline font-bold text-xl text-primary mb-3 uppercase group-hover:text-black">EXEC_SECURE</h3>
-                        <p class="text-[#00FF41]/70 leading-relaxed group-hover:text-black/80">Enterprise encryption layers. Sensitive data remains within your secure workspace.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Sidebar Element -->
-        <div class="fixed left-0 top-1/2 -translate-y-1/2 w-1 h-32 bg-[#00FF41] shadow-[0_0_15px_#00FF41] z-50"></div>
+        </div><!-- /max-w-7xl -->
     </main>
 
-    <!-- BottomNavBar -->
-    <div class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-stretch h-16 bg-[#131313] border-t-2 border-[#2A2A2A] shadow-[0_-5px_20px_rgba(0,255,65,0.1)] md:hidden">
-        <a class="flex flex-col items-center justify-center bg-[#00FF41] text-[#131313] px-4 py-1 h-full active:scale-95 transition-transform" href="#" data-view="records">
-            <span class="material-symbols-outlined">database</span>
-            <span class="font-['Space_Grotesk'] text-[10px] uppercase font-bold mt-1">RECORDS</span>
+    <!-- Footer -->
+    <footer class="bg-black text-[#00FF41] font-mono text-[10px] tracking-widest uppercase border-t border-[#00FF41]/20 flex flex-col md:flex-row justify-between items-center w-full px-8 py-4 gap-4 pb-20 md:pb-4">
+        <div class="flex items-center gap-4">
+            <span class="font-bold">SYSTEM_OVERRIDE</span>
+            <span class="text-[#00FF41]/30">(C) 2024 QUIET_EXEC // ALL_RIGHTS_RESERVED</span>
+        </div>
+        <div class="flex gap-6">
+            <a class="text-[#00FF41]/30 hover:text-[#00FF41] transition-colors" href="#">PRIVACY.MD</a>
+            <a class="text-[#00FF41]/30 hover:text-[#00FF41] transition-colors" href="#">TERMS.EXE</a>
+            <a class="text-[#00FF41]/30 hover:text-[#00FF41] transition-colors" href="#">SUPPORT_SYS</a>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Nav -->
+    <div class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-stretch h-16 bg-[#0e0e0e] border-t-2 border-[#00FF41]/20 md:hidden">
+        <a class="flex flex-col items-center justify-center bg-[#00FF41] text-black px-4 py-1 h-full" href="#">
+            <span class="material-symbols-outlined text-lg">database</span>
+            <span class="text-[10px] uppercase font-bold mt-0.5">RECORDS</span>
         </a>
-        <a class="flex flex-col items-center justify-center text-[#00FF41] px-4 py-1 h-full opacity-60 hover:bg-[#00FF41]/20 active:scale-95 transition-transform" href="#" data-view="transcript">
-            <span class="material-symbols-outlined">description</span>
-            <span class="font-['Space_Grotesk'] text-[10px] uppercase font-bold mt-1">TRANSCRIPT</span>
+        <a class="flex flex-col items-center justify-center text-[#00FF41] px-4 py-1 h-full opacity-50 hover:bg-[#00FF41]/10" href="#">
+            <span class="material-symbols-outlined text-lg">description</span>
+            <span class="text-[10px] uppercase font-bold mt-0.5">TRANSCRIPT</span>
         </a>
-        <a class="flex flex-col items-center justify-center text-[#00FF41] px-4 py-1 h-full opacity-60 hover:bg-[#00FF41]/20 active:scale-95 transition-transform" href="#" data-view="participants">
-            <span class="material-symbols-outlined">groups</span>
-            <span class="font-['Space_Grotesk'] text-[10px] uppercase font-bold mt-1">PARTICIPANTS</span>
+        <a class="flex flex-col items-center justify-center text-[#00FF41] px-4 py-1 h-full opacity-50 hover:bg-[#00FF41]/10" href="#">
+            <span class="material-symbols-outlined text-lg">groups</span>
+            <span class="text-[10px] uppercase font-bold mt-0.5">TEAM</span>
         </a>
-        <a class="flex flex-col items-center justify-center text-[#00FF41] px-4 py-1 h-full opacity-60 hover:bg-[#00FF41]/20 active:scale-95 transition-transform" href="#" data-view="commands">
-            <span class="material-symbols-outlined">keyboard_command_key</span>
-            <span class="font-['Space_Grotesk'] text-[10px] uppercase font-bold mt-1">COMMANDS</span>
+        <a class="flex flex-col items-center justify-center text-[#00FF41] px-4 py-1 h-full opacity-50 hover:bg-[#00FF41]/10" href="#">
+            <span class="material-symbols-outlined text-lg">keyboard_command_key</span>
+            <span class="text-[10px] uppercase font-bold mt-0.5">CMDS</span>
         </a>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-black border-t-2 border-[#00FF41] w-full py-12 px-8 mb-16 md:mb-0">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="flex flex-col gap-4">
-                <span class="font-headline font-bold text-[#00FF41] text-xl tracking-[0.3em] uppercase terminal-text-glow">EXEC_ASST_v1</span>
-                <p class="text-[10px] leading-relaxed text-[#00FF41]/60 max-w-xs uppercase">
-                    &gt; SYSTEM_MOTTO: Redefining productivity for the modern executive through high-fidelity automation.
-                </p>
-            </div>
-            <div class="flex gap-8">
-                <a class="text-[10px] text-[#00FF41] hover:underline uppercase" href="#">PRIVACY.MD</a>
-                <a class="text-[10px] text-[#00FF41] hover:underline uppercase" href="#">TERMS.EXE</a>
-                <a class="text-[10px] text-[#00FF41] hover:underline uppercase" href="#">SUPPORT_SYS</a>
-            </div>
-            <div class="text-[#00FF41]/50 text-[10px] uppercase tracking-widest">
-                © 2024 QUIET_EXEC. ALL RIGHTS RESERVED.
-            </div>
-        </div>
-    </footer>
-</div>
+</div><!-- /mainApp -->
 
 <!-- JavaScript Files -->
-<script src="js/config.js?v=2"></script>
-<script src="js/auth.js?v=2"></script>
-<script src="js/api.js?v=2"></script>
-<script src="js/audioCapture.js?v=2"></script>
-<script src="js/ui.js?v=2"></script>
-<script src="js/emailHandler.js?v=2"></script>
-<script src="js/app.js?v=2"></script>
+<script src="js/config.js?v=4"></script>
+<script src="js/auth.js?v=4"></script>
+<script src="js/api.js?v=4"></script>
+<script src="js/audioCapture.js?v=4"></script>
+<script src="js/ui.js?v=4"></script>
+<script src="js/emailHandler.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
 
 </body>
 </html>

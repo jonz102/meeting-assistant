@@ -64,6 +64,10 @@ class MeetingAssistantApp {
             this.logout();
         });
 
+        document.getElementById('logoutBtnNav')?.addEventListener('click', () => {
+            this.logout();
+        });
+
         // Recording
         document.getElementById('listenNowBtn')?.addEventListener('click', async () => {
             if (this.isRecording) {
@@ -229,9 +233,7 @@ class MeetingAssistantApp {
             uiManager.clearTranscript();
             uiManager.disableEmailButton();
 
-            const btn = document.getElementById('listenNowBtn');
-            btn.innerHTML = '<span class="recording-dot"></span> RECORDING...';
-
+            uiManager.setRecordingState(true);
             this.startRecordingTimer();
             showToast('Recording started — transcribing in real time...', 'success');
 
@@ -261,16 +263,17 @@ class MeetingAssistantApp {
             const result = await apiClient.processAudio(audioBlob, this.currentMeetingId);
 
             if (result.success) {
-                // Update UI with results
                 uiManager.setSummary(result.summary);
-                uiManager.setActionItems(result.action_items);
-                uiManager.updateActionItemsCount(result.action_items.length);
+                uiManager.renderActionLog(result.action_items);
                 uiManager.enableEmailButton();
 
-                // Add transcript lines
+                // Add transcript lines (clear first to avoid duplication with real-time)
+                uiManager.clearTranscript();
                 for (const line of result.transcript) {
                     uiManager.addTranscriptLine(line.speaker, line.text, line.timestamp);
                 }
+
+                uiManager.renderHeuristicAnalysis(result.transcript, result.action_items, this.recordingTime);
 
                 showToast('Meeting processed successfully!', 'success');
             } else {
@@ -283,9 +286,7 @@ class MeetingAssistantApp {
         } finally {
             this.isRecording = false;
             uiManager.hideLiveIndicator();
-            const btn = document.getElementById('listenNowBtn');
-            btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">mic</span> LISTEN_NOW';
-            uiManager.setListenNowLoading(false);
+            uiManager.setRecordingState(false);
         }
     }
 
