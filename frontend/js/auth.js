@@ -2,7 +2,7 @@ class AuthManager {
     constructor() {
         this.tokenKey = 'meeting_assistant_token';
         this.userKey = 'meeting_assistant_user';
-        this.apiBase = 'http://localhost:8000';
+        this.apiBase = window.APP_CONFIG?.API_BASE_URL || 'http://localhost:8000';
     }
 
     async signup(email, password, fullName) {
