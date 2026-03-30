@@ -59,7 +59,7 @@ class APIClient {
     async getMeetings() {
         try {
             const token = authManager.getToken();
-            const response = await fetch(`${this.apiBase}/meetings/meetings`, {
+            const response = await fetch(`${this.apiBase}/meetings`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -79,7 +79,7 @@ class APIClient {
     async getMeetingDetail(meetingId) {
         try {
             const token = authManager.getToken();
-            const response = await fetch(`${this.apiBase}/meetings/meetings/${meetingId}`, {
+            const response = await fetch(`${this.apiBase}/meetings/${meetingId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -100,7 +100,7 @@ class APIClient {
         try {
             const token = authManager.getToken();
 
-            const response = await fetch(`${this.apiBase}/meetings/meetings/${meetingId}/email`, {
+            const response = await fetch(`${this.apiBase}/meetings/${meetingId}/email`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
