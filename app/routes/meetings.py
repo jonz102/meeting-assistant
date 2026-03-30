@@ -382,7 +382,7 @@ async def send_meeting_email(
         logger.error(f"Email endpoint error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to send email"
+            detail=f"Failed to send email: {str(e)}"
         )
 
 @router.get("/", response_model=MeetingListResponse)

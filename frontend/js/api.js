@@ -96,13 +96,9 @@ class APIClient {
         }
     }
 
-    async sendMeetingEmail(meetingId, recipientEmail = null) {
+    async sendMeetingEmail(meetingId) {
         try {
             const token = authManager.getToken();
-            const body = {};
-            if (recipientEmail) {
-                body.recipient_email = recipientEmail;
-            }
 
             const response = await fetch(`${this.apiBase}/meetings/meetings/${meetingId}/email`, {
                 method: 'POST',
@@ -110,7 +106,7 @@ class APIClient {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(body)
+                body: JSON.stringify({})
             });
 
             if (!response.ok) {
